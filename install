@@ -38,14 +38,13 @@ REQUIREMENTS_FILE="${SCRIPT_DIR}/utils/requirements.txt"
 # Function to install Python requirements
 install_requirements() {
     echo -e "\n${YELLOW}Installing Requirements wait..${NC}"
-    echo -e "\n${YELLOW}Installing Python requirements...${NC}"
     if [ -f "$REQUIREMENTS_FILE" ]; then
         apt install python3-pip > /dev/null 2>&1
         pip3 install -r "$REQUIREMENTS_FILE" --break-system-packages > /dev/null 2>&1
         if [ $? -eq 0 ]; then
-            echo -e "${GREEN}Python requirements installed successfully!${NC}"
+            echo -e "${GREEN}Requirements installed successfully!${NC}"
         else
-            echo -e "${RED}Failed to install Python requirements. Installation may not work correctly.${NC}"
+            echo -e "${RED}Failed to install requirements. Installation may not work correctly.${NC}"
             read -p "Do you want to continue with the installation? (y/n): " continue_choice
             if [[ ! $continue_choice =~ ^[Yy]$ ]]; then
                 echo -e "${BLUE}Exiting installation script. Goodbye!${NC}"
@@ -53,8 +52,8 @@ install_requirements() {
             fi
         fi
     else
-        echo -e "${RED}Requirements file not found at $REQUIREMENTS_FILE${NC}"
-        read -p "Do you want to continue without installing Python requirements? (y/n): " continue_choice
+        echo -e "${RED}Requirements file not found at $REQUIREMENTS_FILE please contact project maintainer ASAP!${NC}"
+        read -p "Do you want to continue without installing requirements? (y/n): " continue_choice
         if [[ ! $continue_choice =~ ^[Yy]$ ]]; then
             echo -e "${BLUE}Exiting installation script. Goodbye!${NC}"
             exit 1
