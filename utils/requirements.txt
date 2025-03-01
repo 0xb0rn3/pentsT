@@ -1,3 +1,4 @@
+utils
 configparser
 pygit2
 rich>=10.2.2
