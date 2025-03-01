@@ -37,9 +37,11 @@ REQUIREMENTS_FILE="${SCRIPT_DIR}/utils/requirements.txt"
 
 # Function to install Python requirements
 install_requirements() {
+    echo -e "\n${YELLOW}Installing Requirements wait..${NC}"
     echo -e "\n${YELLOW}Installing Python requirements...${NC}"
     if [ -f "$REQUIREMENTS_FILE" ]; then
-        pip3 install -r "$REQUIREMENTS_FILE" --break-system-packages
+        apt install python3-pip > /dev/null 2>&1
+        pip3 install -r "$REQUIREMENTS_FILE" --break-system-packages > /dev/null 2>&1
         if [ $? -eq 0 ]; then
             echo -e "${GREEN}Python requirements installed successfully!${NC}"
         else
