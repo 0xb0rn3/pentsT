@@ -32,7 +32,7 @@ display_banner() {
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_DIR="${SCRIPT_DIR}/configs"
 UTILS_DIR="${SCRIPT_DIR}/utils"
-REQUIREMENTS_FILE="${SCRIPT_DIR}/requirements.txt"
+REQUIREMENTS_FILE="${SCRIPT_DIR}/utils/requirements.txt"
 
 # Function to install Python requirements
 install_requirements() {
