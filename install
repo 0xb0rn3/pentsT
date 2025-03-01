@@ -24,7 +24,8 @@ display_banner() {
     echo -e "██║     ███████╗██║ ╚████║   ██║   ███████║   ██║   "
     echo -e "╚═╝     ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝   ╚═╝   "
     echo -e "${BLUE}====================================================${NC}"
-    echo -e "${BLUE}           PENTST INSTALLATION SCRIPT            ${NC}"
+    echo -e "${BLUE}         PENTST INSTALLATION SCRIPT v0.1         ${NC}"
+    echo -e "${BLUE}        Redesigned and Mainted by 0xb0rn3        ${NC}"
     echo -e "${BLUE}====================================================${NC}"
 }
 
