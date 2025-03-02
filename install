@@ -1,0 +1,48 @@
+#!/bin/bash
+# Install script for managing the PentsT tool with original banner and visuals
+
+# Define the path to the PentsT root directory
+PENTST_DIR="/home/oxborn3/pentsT"
+
+# Change to the PentsT root directory
+cd "$PENTST_DIR" || { echo "Failed to change directory to $PENTST_DIR"; exit 1; }
+
+# Display the banner with original visuals
+echo -e "\e[34m██████╗ ███████╗███╗   ██╗████████╗███████╗████████╗\e[0m"
+echo -e "\e[34m██╔══██╗██╔════╝████╗  ██║╚══██╔══╝██╔════╝╚══██╔══╝\e[0m"
+echo -e "\e[34m██████╔╝█████╗  ██╔██╗ ██║   ██║   ███████╗   ██║   \e[0m"
+echo -e "\e[34m██╔═══╝ ██╔══╝  ██║╚██╗██║   ██║   ╚════██║   ██║   \e[0m"
+echo -e "\e[34m██║     ███████╗██║ ╚████║   ██║   ███████║   ██║   \e[0m"
+echo -e "\e[34m╚═╝     ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝   ╚═╝   \e[0m"
+echo -e "\e[34m====================================================\e[0m"
+echo -e "\e[34m         PENTST INSTALLATION SCRIPT v0.1         \e[0m"
+echo -e "\e[34m        Redesigned and Maintained by 0xb0rn3     \e[0m"
+echo -e "\e[34m====================================================\e[0m"
+echo ""
+
+# Ensure the utils directory contains __init__.py to make it a package
+if [ ! -f "utils/__init__.py" ]; then
+    echo "Creating __init__.py in utils/"
+    touch utils/__init__.py
+fi
+
+# Install any required Python dependencies system-wide (if requirements.txt exists)
+if [ -f "requirements.txt" ]; then
+    echo "Installing Python dependencies..."
+    sudo pip3 install -r requirements.txt
+fi
+
+# Loop over all .ini files in the configs/ directory
+for config in configs/*.ini; do
+    # Check if the config file exists (in case there are no .ini files)
+    if [ -f "$config" ]; then
+        echo "Processing configuration: $config"
+        # Run tooltime.py as a module with sudo
+        sudo python3 -m utils.tooltime "$config"
+    else
+        echo "No configuration files found in configs/"
+        break
+    fi
+done
+
+echo "Installation completed."
