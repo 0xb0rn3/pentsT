@@ -54,20 +54,8 @@ Developed and maintained by [0xb0rn3](https://github.com/0xb0rn3), PentsT aims t
 
 4. The script will create the necessary directories and configurations.
    When prompted, you'll need to provide sudo privileges to install dependencies:
-   ```bash
-   sudo /tmp/pentst_setup.sh
-   ```
 
 5. After setup completes, the core Python script will automatically run to begin the tool installation process.
-
-### Usage
-
-After initial setup, subsequent usage is simple:
-
-```bash
-cd ~/pentsT
-sudo ./core
-```
 
 This will launch the interactive interface where you can select and install your desired pentesting tools.
 
