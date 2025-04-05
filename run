@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# ====================================================================
+# PentsT Management Tool - One script to handle all PentsT operations
+# Engineered and Maintained by 0xb0rn3
+# ====================================================================
+
 # Color definitions 
 DIM='\033[2m'
 ITALIC='\033[3m'
@@ -14,11 +19,42 @@ WHITE='\033[1;37m'
 GRAY='\033[0;90m'
 NC='\033[0m'
 
+# Define the path to the PentsT root directory
+PENTST_DIR="/home/$USER/pentsT"
+LOG_DIR="$PENTST_DIR/logs"
+MAIN_LOG="$LOG_DIR/operation.log"
+
+# Function to log messages
+log_message() {
+    local level="$1"
+    local message="$2"
+    local timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+    
+    # Make sure log directory exists
+    mkdir -p "$LOG_DIR"
+    
+    # Write to log file
+    echo "[$timestamp] [$level] $message" >> "$MAIN_LOG"
+    
+    # Display to console with appropriate color
+    case "$level" in
+        "INFO")     echo -e "${BLUE}ℹ ${message}${NC}" ;;
+        "SUCCESS")  echo -e "${GREEN}✓ ${message}${NC}" ;;
+        "WARNING")  echo -e "${YELLOW}⚠ ${message}${NC}" ;;
+        "ERROR")    echo -e "${RED}✗ ${message}${NC}" ;;
+        *)          echo -e "${message}" ;;
+    esac
+}
+
 # Spinner function for visual feedback
 spinner() {
     local pid=$1
+    local message=$2
     local delay=0.1
     local spinstr='|/-\'
+    
+    echo -ne "${BLUE}⏳ $message ${NC}"
+    
     while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
         local temp=${spinstr#?}
         printf " [%c]  " "$spinstr"
@@ -26,68 +62,100 @@ spinner() {
         sleep $delay
         printf "\b\b\b\b\b\b"
     done
+    
     printf "    \b\b\b\b"
+    echo ""
 }
 
-# Define the path to the PentsT root directory
-PENTST_DIR="/home/$USER/pentsT"
+# Function to display banner
+display_banner() {
+    clear
+    echo -e "\e[34m██████╗ ███████╗███╗   ██╗████████╗███████╗████████╗\e[0m"
+    echo -e "\e[34m██╔══██╗██╔════╝████╗  ██║╚══██╔══╝██╔════╝╚══██╔══╝\e[0m"
+    echo -e "\e[34m██████╔╝█████╗  ██╔██╗ ██║   ██║   ███████╗   ██║   \e[0m"
+    echo -e "\e[34m██╔═══╝ ██╔══╝  ██║╚██╗██║   ██║   ╚════██║   ██║   \e[0m"
+    echo -e "\e[34m██║     ███████╗██║ ╚████║   ██║   ███████║   ██║   \e[0m"
+    echo -e "\e[34m╚═╝     ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝   ╚═╝   \e[0m"
+    echo -e "\e[34m====================================================\e[0m"
+    echo -e "\e[34m        PENTST MANAGEMENT SCRIPT v0.1 ALFA      \e[0m"
+    echo -e "\e[34m       Engineered and Maintained by 0xb0rn3      \e[0m"
+    echo -e "\e[34m====================================================\e[0m"
+    echo ""
+}
 
-# Create directories if they don't exist
-mkdir -p "$PENTST_DIR"
-mkdir -p "$PENTST_DIR/logs"
-mkdir -p "$PENTST_DIR/configs"
-mkdir -p "$PENTST_DIR/utils"
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
 
-# Change to the PentsT root directory
-cd "$PENTST_DIR" || { echo -e "${RED}Failed to change directory to $PENTST_DIR${NC}"; exit 1; }
-
-# Display the banner with original visuals
-echo -e "\e[34m██████╗ ███████╗███╗   ██╗████████╗███████╗████████╗\e[0m"
-echo -e "\e[34m██╔══██╗██╔════╝████╗  ██║╚══██╔══╝██╔════╝╚══██╔══╝\e[0m"
-echo -e "\e[34m██████╔╝█████╗  ██╔██╗ ██║   ██║   ███████╗   ██║   \e[0m"
-echo -e "\e[34m██╔═══╝ ██╔══╝  ██║╚██╗██║   ██║   ╚════██║   ██║   \e[0m"
-echo -e "\e[34m██║     ███████╗██║ ╚████║   ██║   ███████║   ██║   \e[0m"
-echo -e "\e[34m╚═╝     ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝   ╚═╝   \e[0m"
-echo -e "\e[34m====================================================\e[0m"
-echo -e "\e[34m        PENTST INSTALLATION SCRIPT v0.1 ALFA    \e[0m"
-echo -e "\e[34m       Engineered and Maintained by 0xb0rn3      \e[0m"
-echo -e "\e[34m====================================================\e[0m"
-echo ""
-
-# Create and configure the requirements file
-echo -e "${BLUE}Setting up environment...${NC}"
-cat > "$PENTST_DIR/utils/requirements.txt" << EOL
+# Function to handle initial setup
+perform_initial_setup() {
+    # Create directories if they don't exist
+    mkdir -p "$PENTST_DIR"
+    mkdir -p "$PENTST_DIR/logs"
+    mkdir -p "$PENTST_DIR/configs"
+    mkdir -p "$PENTST_DIR/utils"
+    
+    log_message "INFO" "Setting up environment..."
+    
+    # Create requirements.txt
+    cat > "$PENTST_DIR/utils/requirements.txt" << EOL
 rich>=10.0.0
 psutil>=5.8.0
 EOL
+    
+    # Create __init__.py in utils directory to make it a package
+    touch "$PENTST_DIR/utils/__init__.py"
+    
+    log_message "SUCCESS" "Initial environment setup complete"
+}
 
-# Create __init__.py in utils directory to make it a package
-touch "$PENTST_DIR/utils/__init__.py"
+# Function to run commands with sudo
+run_with_sudo() {
+    local command_str="$1"
+    local msg="$2"
+    
+    if [ "$EUID" -eq 0 ]; then
+        # Already running as root
+        eval "$command_str"
+        return $?
+    else
+        echo -e "${YELLOW}➤ Sudo privileges required for: $msg${NC}"
+        echo -e "${YELLOW}➤ You may be prompted for your password.${NC}"
+        sudo bash -c "$command_str"
+        return $?
+    fi
+}
 
-# Create the setup script
-cat > "$PENTST_DIR/setup_helper.sh" << 'EOL'
+# Function to setup and run core with proper privileges
+setup_and_run_core() {
+    local setup_script="$PENTST_DIR/setup_helper.sh"
+    
+    # Create the setup helper script
+    cat > "$setup_script" << 'EOL'
 #!/usr/bin/env bash
-# Suppress standard output
-exec 3>&1
-exec 1>/dev/null
+# Setup helper for PentsT
 
-# Function to print to original stdout
+# Redirect stderr to stdout
+exec 2>&1
+
+# Function to print status
 print_status() {
-    echo -e "$1" >&3
+    echo -e "$1"
 }
 
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then
-    print_status "\e[1;31mPlease run this script as root with sudo\e[0m"
+    print_status "\e[1;31m✗ This operation requires elevated privileges\e[0m"
     exit 1
 fi
 
-print_status "\e[1;34m⏳ Setting up environment...\e[0m"
+print_status "\e[1;34mℹ Setting up environment...\e[0m"
 
-# Function to install package quietly
+# Function to install package
 install_package() {
     if ! dpkg -l "$1" &>/dev/null; then
-        apt-get install -y "$1" &>/dev/null
+        apt-get install -y "$1" 
         if [ $? -eq 0 ]; then
             print_status "\e[1;32m✓ Installed $1\e[0m"
         else
@@ -98,14 +166,17 @@ install_package() {
     return 0
 }
 
+# Update package index
+apt-get update 
+
 # Install core dependencies
 install_package python3 || exit 1
 install_package python3-pip || exit 1
 install_package wget || exit 1
 
 # Install Python dependencies
-print_status "\e[1;34m⏳ Installing Python libraries...\e[0m"
-pip3 install --break-system-packages -r utils/requirements.txt &>/dev/null
+print_status "\e[1;34mℹ Installing Python libraries...\e[0m"
+pip3 install --break-system-packages -r utils/requirements.txt
 if [ $? -eq 0 ]; then
     print_status "\e[1;32m✓ Python dependencies installed\e[0m"
 else
@@ -122,50 +193,180 @@ fi
 # Make core executable
 chmod +x core
 print_status "\e[1;32m✓ Environment setup complete\e[0m"
-print_status "\e[1;34m⏳ Starting core installation process...\e[0m"
-
-# Execute the core script
-./core
-
-# Success message
-print_status "\e[1;32m✓ PentsT setup completed!\e[0m"
 EOL
 
-# Make the setup helper executable
-chmod +x "$PENTST_DIR/setup_helper.sh"
-
-# Check if script is already running with sudo
-if [ "$EUID" -eq 0 ]; then
-    echo -e "${RED}⚠️ This initial setup should not be run with sudo.${NC}"
-    echo -e "${YELLOW}Restarting without sudo privileges...${NC}"
-    # Get the original user
-    ORIG_USER=$(logname || echo "$SUDO_USER")
-    if [ -z "$ORIG_USER" ]; then
-        echo -e "${RED}Failed to determine the original user. Please run without sudo.${NC}"
+    # Make setup helper executable
+    chmod +x "$setup_script"
+    
+    # Run the setup helper with sudo
+    run_with_sudo "$setup_script" "Installing system dependencies"
+    
+    if [ $? -ne 0 ]; then
+        log_message "ERROR" "Setup failed. Please check the logs."
         exit 1
     fi
-    # Re-run the script as the original user
-    su - "$ORIG_USER" -c "cd $PENTST_DIR && ./run"
-    exit 0
-fi
-
-echo -e "${GREEN}✓ Initial setup complete${NC}"
-echo -e "${BLUE}⏳ Now elevating privileges to install dependencies and tools...${NC}"
-
-# Create a wrapper sudo command that preserves the PATH
-sudo_command() {
-    echo -e "${YELLOW}➤ Sudo privileges required to install system dependencies.${NC}"
-    echo -e "${YELLOW}➤ You may be prompted for your password.${NC}"
-    sudo -E "$@"
+    
+    # Now run the core script with sudo
+    if [ -f "$PENTST_DIR/core" ]; then
+        log_message "INFO" "Starting core PentsT toolkit..."
+        run_with_sudo "$PENTST_DIR/core" "Running PentsT core functionality"
+    else
+        log_message "ERROR" "Core script not found at $PENTST_DIR/core"
+        exit 1
+    fi
 }
 
-# Run the setup helper with sudo
-if sudo_command "$PENTST_DIR/setup_helper.sh"; then
-    echo -e "${GREEN}✓ Setup completed successfully!${NC}"
-    echo -e "${BLUE}You can run PentsT anytime with:${NC}"
-    echo -e "${CYAN}   cd $PENTST_DIR && sudo ./core ${NC}"
-else
-    echo -e "${RED}✗ Setup encountered issues. Check the logs for details.${NC}"
-    echo -e "${YELLOW}You can try running the setup script manually:${NC}"
-    echo -e "${CYAN}   sudo $PENTST_DIR/setup_helper.sh${NC}"
-fi
+# Function to check the setup status
+check_setup_status() {
+    # Check if key directories and files exist
+    if [ -f "$PENTST_DIR/core" ] && [ -d "$PENTST_DIR/utils" ] && [ -f "$PENTST_DIR/utils/requirements.txt" ]; then
+        # Check if Python dependencies are installed
+        if command_exists python3 && command_exists pip3; then
+            # Check if rich module is available
+            if python3 -c "import rich" &>/dev/null; then
+                return 0  # Setup is complete
+            fi
+        fi
+    fi
+    return 1  # Setup is incomplete
+}
+
+# Function to display menu
+display_menu() {
+    echo -e "${CYAN}Select an option:${NC}"
+    echo -e "${CYAN}1.${NC} Run PentsT Toolkit"
+    echo -e "${CYAN}2.${NC} Update PentsT"
+    echo -e "${CYAN}3.${NC} View Logs"
+    echo -e "${CYAN}4.${NC} Clean Installation"
+    echo -e "${CYAN}5.${NC} Uninstall PentsT"
+    echo -e "${CYAN}0.${NC} Exit"
+    echo ""
+    read -p "Enter your choice [0-5]: " choice
+    return $choice
+}
+
+# Function to view logs
+view_logs() {
+    if [ -f "$MAIN_LOG" ]; then
+        echo -e "${CYAN}=== PentsT Operation Log ===${NC}"
+        less "$MAIN_LOG"
+    else
+        log_message "WARNING" "No logs found at $MAIN_LOG"
+    fi
+}
+
+# Function to clean installation
+clean_installation() {
+    log_message "INFO" "Cleaning PentsT installation..."
+    
+    # Remove logs
+    if [ -d "$LOG_DIR" ]; then
+        run_with_sudo "rm -rf $LOG_DIR/*" "Cleaning log files"
+        log_message "SUCCESS" "Logs cleaned"
+    fi
+    
+    # Reset configurations
+    if [ -d "$PENTST_DIR/configs" ]; then
+        run_with_sudo "rm -rf $PENTST_DIR/configs/*" "Cleaning configuration files"
+        log_message "SUCCESS" "Configurations reset"
+    fi
+    
+    log_message "SUCCESS" "PentsT installation cleaned"
+}
+
+# Function to uninstall PentsT
+uninstall_pentst() {
+    echo -e "${RED}⚠️ Warning: This will completely remove PentsT from your system.${NC}"
+    read -p "Are you sure you want to continue? (y/N): " confirm
+    
+    if [[ "$confirm" == [yY] || "$confirm" == [yY][eE][sS] ]]; then
+        log_message "WARNING" "Uninstalling PentsT..."
+        
+        # Remove the PentsT directory
+        run_with_sudo "rm -rf $PENTST_DIR" "Removing PentsT directory"
+        
+        log_message "SUCCESS" "PentsT has been uninstalled"
+        echo -e "${YELLOW}Thank you for using PentsT.${NC}"
+        exit 0
+    else
+        log_message "INFO" "Uninstallation cancelled"
+    fi
+}
+
+# Function to update PentsT
+update_pentst() {
+    log_message "INFO" "Checking for updates..."
+    
+    # Here you would typically pull the latest version from a repo
+    # For now, we'll just update the setup and run core again
+    
+    setup_and_run_core
+}
+
+# Main function
+main() {
+    display_banner
+    
+    # Check if current directory is the PentsT directory
+    if [ "$(pwd)" != "$PENTST_DIR" ]; then
+        # Change to the PentsT directory or create it if it doesn't exist
+        mkdir -p "$PENTST_DIR"
+        cd "$PENTST_DIR" || { log_message "ERROR" "Failed to change directory to $PENTST_DIR"; exit 1; }
+    fi
+    
+    # Check if PentsT is already set up
+    if check_setup_status; then
+        # Display menu
+        display_menu
+        choice=$?
+        
+        case $choice in
+            1)
+                # Run PentsT Toolkit
+                setup_and_run_core
+                ;;
+            2)
+                # Update PentsT
+                update_pentst
+                ;;
+            3)
+                # View Logs
+                view_logs
+                ;;
+            4)
+                # Clean Installation
+                clean_installation
+                ;;
+            5)
+                # Uninstall PentsT
+                uninstall_pentst
+                ;;
+            0)
+                # Exit
+                echo -e "${CYAN}Thank you for using PentsT.${NC}"
+                exit 0
+                ;;
+            *)
+                log_message "ERROR" "Invalid option"
+                main
+                ;;
+        esac
+    else
+        # First time setup
+        log_message "INFO" "Performing first-time setup..."
+        perform_initial_setup
+        setup_and_run_core
+    fi
+}
+
+# Function to safely handle interrupted execution
+safe_exit() {
+    echo -e "\n${YELLOW}Operation cancelled by user${NC}"
+    exit 1
+}
+
+# Set up trap to handle Ctrl+C
+trap safe_exit INT
+
+# Start the main function
+main
