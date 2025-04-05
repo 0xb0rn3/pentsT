@@ -29,19 +29,6 @@ spinner() {
     printf "    \b\b\b\b"
 }
 
-# Verify root privileges
-if [ "$EUID" -eq 0 ]; then
-    echo -e "${RED}⚠️ SUDO DETECTED!${NC}"
-    echo -e "${RED}I REFUSE TO RUN WITH SUDO! only at first RUN when SUDO will be needed i shall request for now run with out sudo just > ./install !${NC}"
-    sleep 1.5
-    echo -e "${RED}ABORTING IMMEDIATELY${NC}"
-    clear
-    exit 1
-else
-    echo -e "${GREEN}✓ Privilege check reports SUCCESS. Ready to Roll..!${NC}"
-fi
-clear
-
 # Define the path to the PentsT root directory
 PENTST_DIR="/home/$USER/pentsT"
 
@@ -78,7 +65,7 @@ EOL
 touch "$PENTST_DIR/utils/__init__.py"
 
 # Create the setup script
-cat > /tmp/pentst_setup.sh << 'EOL'
+cat > "$PENTST_DIR/setup_helper.sh" << 'EOL'
 #!/usr/bin/env bash
 # Suppress standard output
 exec 3>&1
@@ -143,3 +130,42 @@ print_status "\e[1;34m⏳ Starting core installation process...\e[0m"
 # Success message
 print_status "\e[1;32m✓ PentsT setup completed!\e[0m"
 EOL
+
+# Make the setup helper executable
+chmod +x "$PENTST_DIR/setup_helper.sh"
+
+# Check if script is already running with sudo
+if [ "$EUID" -eq 0 ]; then
+    echo -e "${RED}⚠️ This initial setup should not be run with sudo.${NC}"
+    echo -e "${YELLOW}Restarting without sudo privileges...${NC}"
+    # Get the original user
+    ORIG_USER=$(logname || echo "$SUDO_USER")
+    if [ -z "$ORIG_USER" ]; then
+        echo -e "${RED}Failed to determine the original user. Please run without sudo.${NC}"
+        exit 1
+    fi
+    # Re-run the script as the original user
+    su - "$ORIG_USER" -c "cd $PENTST_DIR && ./run"
+    exit 0
+fi
+
+echo -e "${GREEN}✓ Initial setup complete${NC}"
+echo -e "${BLUE}⏳ Now elevating privileges to install dependencies and tools...${NC}"
+
+# Create a wrapper sudo command that preserves the PATH
+sudo_command() {
+    echo -e "${YELLOW}➤ Sudo privileges required to install system dependencies.${NC}"
+    echo -e "${YELLOW}➤ You may be prompted for your password.${NC}"
+    sudo -E "$@"
+}
+
+# Run the setup helper with sudo
+if sudo_command "$PENTST_DIR/setup_helper.sh"; then
+    echo -e "${GREEN}✓ Setup completed successfully!${NC}"
+    echo -e "${BLUE}You can run PentsT anytime with:${NC}"
+    echo -e "${CYAN}   cd $PENTST_DIR && sudo ./core ${NC}"
+else
+    echo -e "${RED}✗ Setup encountered issues. Check the logs for details.${NC}"
+    echo -e "${YELLOW}You can try running the setup script manually:${NC}"
+    echo -e "${CYAN}   sudo $PENTST_DIR/setup_helper.sh${NC}"
+fi
