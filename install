@@ -15,20 +15,18 @@ GRAY='\033[0;90m'
 NC='\033[0m'
 
 # Verify root privileges
-if [ "$EUID" -ne 0 ]; then
-    print_status "Root Privileges" "FAIL"
-    echo -e "${RED}I REFUSE TO RUN WITHOUT SUDO!${NC}"
+if [ "$EUID" -eq 0 ]; then
+    print_status "Root Privileges check" "FAIL"
+    echo -e "${RED}⚠️SUDO DETECTED!${NC}"
+    echo -e "${RED}I REFUSE TO RUN WITH SUDO! only at first RUN when SUDO will be needed i shall request for now run with out sudo just > ./install !${NC}"
+    echo -e "${RED}ABORTING IMMEDIATELY${NC}"
     exit 1
+else
+    echo -e "${GREEN} Priviledge check reports SUCCESS. Ready to Roll..!${NC}"
 fi
-if [ -z "$SUDO_USER" ]; then
-    print_status "User Detection" "FAIL"
-    echo -e "${RED}Please run with sudo, not as root${NC}"
-    exit 1
-fi
-echo -e "${GREEN} Priviledeg check reports SUCCESS. Ready to Roll..!${NC}"
-
+clear
 # Define the path to the PentsT root directory
-PENTST_DIR="/home/oxborn3/pentsT"
+PENTST_DIR="/home/$USER/pentsT"
 
 # Change to the PentsT root directory
 cd "$PENTST_DIR" || { echo "Failed to change directory to $PENTST_DIR"; exit 1; }
