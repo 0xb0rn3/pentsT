@@ -54,7 +54,7 @@ fi
 # Install any required Python dependencies system-wide (if requirements.txt exists)
 if [ -f "requirements.txt" ]; then
     echo "Installing Python dependencies..."
-    sudo pip3 install -r requirements.txt
+    sudo pip3 install -r /home/$USER/pentsT/utils/requirements.txt
 fi
 
 # Loop over all .ini files in the configs/ directory
