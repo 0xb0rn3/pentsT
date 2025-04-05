@@ -16,9 +16,11 @@ NC='\033[0m'
 
 # Verify root privileges
 if [ "$EUID" -eq 0 ]; then
-    echo -e "${RED}⚠️SUDO DETECTED!${NC}"
+    echo -e "${RED}⚠️ SUDO DETECTED!${NC}"
     echo -e "${RED}I REFUSE TO RUN WITH SUDO! only at first RUN when SUDO will be needed i shall request for now run with out sudo just > ./install !${NC}"
+    sleep 1.5
     echo -e "${RED}ABORTING IMMEDIATELY${NC}"
+    clear
     exit 1
 else
     echo -e "${GREEN} Priviledge check reports SUCCESS. Ready to Roll..!${NC}"
