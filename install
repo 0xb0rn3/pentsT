@@ -42,7 +42,7 @@ echo -e "\e[34m██║     ███████╗██║ ╚████�
 echo -e "\e[34m╚═╝     ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝   ╚═╝   \e[0m"
 echo -e "\e[34m====================================================\e[0m"
 echo -e "\e[34m        PENTST INSTALLATION SCRIPT v0.1 ALFA    \e[0m"
-echo -e "\e[34m        Reengineered and Maintained by 0xb0rn3    \e[0m"
+echo -e "\e[34m       Re-engineered and Maintained by 0xb0rn3    \e[0m"
 echo -e "\e[34m====================================================\e[0m"
 echo ""
 
