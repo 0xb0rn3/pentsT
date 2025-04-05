@@ -25,8 +25,7 @@ if [ -z "$SUDO_USER" ]; then
     echo -e "${RED}Please run with sudo, not as root${NC}"
     exit 1
 fi
-print_status "Privilege Check" "OK"
-}
+echo -e "${GREEN} Priviledeg check reports SUCCESS. Ready to Roll..!${NC}"
 
 # Define the path to the PentsT root directory
 PENTST_DIR="/home/oxborn3/pentsT"
