@@ -14,16 +14,12 @@ Developed and maintained by [0xb0rn3](https://github.com/0xb0rn3), PentsT aims t
 
 ## ✨ Features
 
-- **Rich, Interactive Interface**: User-friendly TUI with progress bars, spinners, and color-coded status updates
-- **Multiple Installation Modes**:
-  - Full toolkit installation
-  - Installation by category (Web, Wireless, Forensics, etc.)
-  - Individual tool selection with pagination
-  - Custom list import
-- **System Resource Monitoring**: Real-time display of CPU, memory, and disk usage
-- **Automatic Repository Configuration**: Sets up proper repositories and package pinning
-- **Comprehensive Logging**: Detailed logs for troubleshooting and audit trails
-- **Enhanced Error Handling**: Automatic retries and proper error reporting
+## Features
+- **Full Toolkit Installation**: Install all available tools from Kali metapackages.
+- **Category-Based Installation**: Select tools by category (e.g., Web Assessment, Wireless Tools).
+- **Individual Tool Selection**: Choose specific tools to install, with search functionality.
+- **Predefined Tool Sets**: Install curated sets of tools for common scenarios (e.g., Web App Testing, Network Penetration).
+- **Custom List Installation**: Install tools from a user-provided list.
 
 ## 📋 Prerequisites
 
