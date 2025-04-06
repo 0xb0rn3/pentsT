@@ -139,7 +139,7 @@ print_status "\e[1;32m✓ Environment setup complete\e[0m"
 print_status "\e[1;34m⏳ Starting core installation process...\e[0m"
 
 # Execute the core script
-sudo ./core
+sudo ./core >&3 2>&3
 
 # Success message
 print_status "\e[1;32m✓ PentsT setup completed!\e[0m"
