@@ -1,4 +1,4 @@
-# PentsT - Penetration Testing Toolkit Installer
+# PentsT - Penetration Testing Toolkit Installer {UNDER MAINTAINANCE! UNSTABLE}
 
 ![PentsT Banner](https://raw.githubusercontent.com/0xb0rn3/pentsT/main/assets/banner.png)
 
