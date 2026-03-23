@@ -78,7 +78,7 @@ pacman_install() {
   done
   if [[ ${#to_install[@]} -gt 0 ]]; then
     info "Installing: ${to_install[*]}"
-    sudo pacman -S --noconfirm --needed "${to_install[@]}" 2>&1 | tee -a "$LOG_FILE"
+    yay -S --noconfirm --needed "${to_install[@]}" 2>&1 | tee -a "$LOG_FILE"
   else
     ok "Already installed: ${pkgs[*]}"
   fi
